@@ -2,6 +2,10 @@ const BG_COLOR = '#231f20';
 const SNAKE_COLOR = '#c2c2c2';
 const FOOD_COLOR = '#e66916';
 
+const socket = io('http://localhost:3000');
+
+socket.on('init',handleInit);
+
 let canvas, ctx;
 
 const gameState = {
@@ -67,4 +71,8 @@ function paintPlayer(playerState, size, colour){
     for(let cell of snake){
         ctx.fillRect(cell.x * size , cell.y * size, size, size)
     }
+}
+
+function handleInit(msg){
+    console.log(msg);
 }
