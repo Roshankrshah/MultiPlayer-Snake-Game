@@ -5,31 +5,11 @@ const FOOD_COLOR = '#e66916';
 const socket = io('http://localhost:3000');
 
 socket.on('init',handleInit);
+socket.on('gameState',handleGameState)
 
 let canvas, ctx;
 
-const gameState = {
-    player: {
-        pos: {
-            x: 3,
-            y: 10,
-        },
-        vel: {
-            x: 1,
-            y: 0,
-        },
-        snake: [
-            {x:1, y:10},
-            {x:2, y:10},
-            {x:3, y:10}
-        ],
-    },
-    food: {
-        x: 7,
-        y: 7
-    },
-    gridsize: 20
-};
+const gameScreen = document.getElementById('gameScreen');
 
 function init(){
     canvas = document.getElementById('canvas');
@@ -45,6 +25,7 @@ function init(){
 
 function keydown(e) {
     console.log(e.keyCode);
+    socket.emit('keydown',e.keyCode);
 }
 
 init();
@@ -58,7 +39,7 @@ function paintGame(state){
     const size = canvas.width / gridsize;
 
     ctx.fillStyle = FOOD_COLOR;
-    ctx.fillRect(food.x * size, food.y * size, size);
+    ctx.fillRect(food.x * size, food.y * size, size,size);
 
     paintPlayer(state.player,size, SNAKE_COLOR);
 }
@@ -66,7 +47,7 @@ function paintGame(state){
 function paintPlayer(playerState, size, colour){
     const snake = playerState.snake;
 
-    ctx.fillStyle = SNAKE_COLOR;
+    ctx.fillStyle = colour;
 
     for(let cell of snake){
         ctx.fillRect(cell.x * size , cell.y * size, size, size)
@@ -75,4 +56,9 @@ function paintPlayer(playerState, size, colour){
 
 function handleInit(msg){
     console.log(msg);
+}
+
+function handleGameState(gameState){
+    gameState = JSON.parse(gameState);
+    requestAnimationFrame(()=> paintGame(gameState));
 }
